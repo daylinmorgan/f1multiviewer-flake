@@ -8,6 +8,8 @@
 }:
 stdenvNoCC.mkDerivation rec {
   name = "f1multiviewer";
+  version = "1.37.7";
+
   src = fetchzip {
     url = "https://releases.multiviewer.app/download/155752212/MultiViewer.for.F1-linux-x64-1.31.7.zip";
     hash = "sha256-0XI2LtOXmtHd/vKJ49l34V9macMBh7bfWWBLLhF02Io=";
