@@ -1,0 +1,33 @@
+name: Check for Updates
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * 0,2,4'
+
+permissions:
+  contents: write
+
+jobs:
+  issue:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Git Bot
+        run: |
+          git --version
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: Check for Update
+        run: python update.py
+
+      - name: Push Updates
+        run: |
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git add -A
+            git commit -m "chore: bump version"
+            git tag $(grep version default.nix | sed -E 's/version = "(.*)";/\1/')
+            git push --follow-tags
+          fi
