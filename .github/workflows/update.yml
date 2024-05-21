@@ -16,6 +16,11 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+
+      - run: git status
+
       - name: Setup Git Bot
         run: |
           git --version
