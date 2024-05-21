@@ -18,13 +18,13 @@ headers = {
     "User-Agent": "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7",
 }
 
+def extract_version(nix_expr):
+    m = re.search(r'version.*=.*"(?P<version>.*)";', nix_expr)
+    if m:
+        return m.group('version')
 
-def version_from_last_tag():
-    return subprocess.check_output(
-        ("git", "describe", "--tags"),
-        text=True,
-    ).strip().replace("v", "")
-
+    print("failed to read version from default.nix")
+    sys.exit(0)
 
 def get_latest_releases():
     req = Request(RELEASES_URL, headers=headers)
@@ -47,13 +47,10 @@ def compute_sha256(url):
     ).stderr
     return nix_output.splitlines()[-1].split("got:")[-1].strip()
 
-def update_default_nix(version,url, sha256):
+def update_default_nix(nix_expr, version,url, sha256):
     print('modifying default.nix')
-    default_path = Path(__file__).parent / "default.nix"
-    default = default_path.read_text()
     for v, value in zip(('version', 'url',' hash'), (version,url,sha256)):
-        default = re.sub(rf'{v} = "(.*)"', f'{v} = "{value}"', default)
-    default_path.write_text(default)
+        nix_expr= re.sub(rf'{v} = "(.*)"', f'{v} = "{value}"', nix_expr)
 
 def main():
     parser = argparse.ArgumentParser()
@@ -66,7 +63,10 @@ def main():
     parser.add_argument("--tag", help="tag new version", action="store_true")
     args = parser.parse_args()
     latest = get_latest_releases()
-    current_version = version_from_last_tag()
+
+    path_to_default = Path(__file__).parent / "default.nix"
+    package_nix_expr = path_to_default.read_text()
+    current_version = extract_version(package_nix_expr)
 
     print("Latest Version:", latest["version"])
     print("Current Version:", current_version)
@@ -76,7 +76,8 @@ def main():
 
     linux = [o for o in latest["downloads"] if o.get("platform") == "linux"][0]
     sha256 = compute_sha256(linux["url"])
-    update_default_nix(latest['version'], linux['url'], sha256)
+    update_default_nix(package_nix_expr, latest['version'], linux['url'], sha256)
+    path_to_default.write_text(package_nix_expr)
 
 
 if __name__ == "__main__":
