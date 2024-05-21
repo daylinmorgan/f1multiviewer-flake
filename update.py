@@ -19,11 +19,11 @@ headers = {
 }
 
 
-def current_version():
+def version_from_last_tag():
     return subprocess.check_output(
         ("git", "describe", "--tags"),
         text=True,
-    ).replace("v", "")
+    ).strip().replace("v", "")
 
 
 def get_latest_releases():
@@ -66,9 +66,11 @@ def main():
     parser.add_argument("--tag", help="tag new version", action="store_true")
     args = parser.parse_args()
     latest = get_latest_releases()
+    current_version = version_from_last_tag()
 
     print("Latest Version:", latest["version"])
-    if (current_version() == latest["version"]) and not args.force:
+    print("Current Version:", current_version)
+    if (current_version == latest["version"]) and not args.force:
         print("flake up to date")
         sys.exit(0)
 
