@@ -18,13 +18,15 @@ headers = {
     "User-Agent": "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7",
 }
 
+
 def extract_version(nix_expr):
     m = re.search(r'version.*=.*"(?P<version>.*)";', nix_expr)
     if m:
-        return m.group('version')
+        return m.group("version")
 
     print("failed to read version from default.nix")
     sys.exit(0)
+
 
 def get_latest_releases():
     req = Request(RELEASES_URL, headers=headers)
@@ -47,10 +49,12 @@ def compute_sha256(url):
     ).stderr
     return nix_output.splitlines()[-1].split("got:")[-1].strip()
 
-def update_default_nix(nix_expr, version,url, sha256):
-    print('modifying default.nix')
-    for v, value in zip(('version', 'url',' hash'), (version,url,sha256)):
-        nix_expr= re.sub(rf'{v} = "(.*)"', f'{v} = "{value}"', nix_expr)
+
+def update_default_nix(nix_expr, version, url, sha256):
+    print("modifying default.nix")
+    for v, value in zip(("version", "url", " hash"), (version, url, sha256)):
+        nix_expr = re.sub(rf'{v} = "(.*)";', f'{v} = "{value}";', nix_expr)
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -76,7 +80,7 @@ def main():
 
     linux = [o for o in latest["downloads"] if o.get("platform") == "linux"][0]
     sha256 = compute_sha256(linux["url"])
-    update_default_nix(package_nix_expr, latest['version'], linux['url'], sha256)
+    update_default_nix(package_nix_expr, latest["version"], linux["url"], sha256)
     path_to_default.write_text(package_nix_expr)
 
 
