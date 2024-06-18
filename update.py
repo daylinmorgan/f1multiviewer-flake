@@ -54,6 +54,7 @@ def update_default_nix(nix_expr, version, url, sha256):
     print("modifying default.nix")
     for v, value in zip(("version", "url", " hash"), (version, url, sha256)):
         nix_expr = re.sub(rf'{v} = "(.*)";', f'{v} = "{value}";', nix_expr)
+    return nix_expr
 
 
 def main():
@@ -80,7 +81,7 @@ def main():
 
     linux = [o for o in latest["downloads"] if o.get("platform") == "linux"][0]
     sha256 = compute_sha256(linux["url"])
-    update_default_nix(package_nix_expr, latest["version"], linux["url"], sha256)
+    package_nix_expr = update_default_nix(package_nix_expr, latest["version"], linux["url"], sha256)
     path_to_default.write_text(package_nix_expr)
 
 
