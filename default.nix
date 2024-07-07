@@ -9,11 +9,11 @@
 }:
 stdenvNoCC.mkDerivation rec {
   name = "f1multiviewer";
-  version = "1.34.4";
+  version = "1.35.1";
 
   src = fetchzip {
-    url = "https://releases.multiviewer.app/download/178062562/MultiViewer.for.F1-linux-x64-1.34.4.zip";
-    hash = "sha256-snCzqpS9QMSMprCYul0/MpWmk/iPqzrmI151yecZ4Mc=";
+    url = "https://releases.multiviewer.app/download/178176603/MultiViewer.for.F1-linux-x64-1.35.1.zip";
+    hash = "sha256-rtYX5cUZ0Wc1b9tgK2z7t7i56VaghUDgiUzcGYnLoxQ=";
   };
 
   nativeBuildInputs = [ makeWrapper ];
