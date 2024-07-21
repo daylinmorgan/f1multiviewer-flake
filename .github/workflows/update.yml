@@ -24,8 +24,8 @@ jobs:
       - name: Setup Git Bot
         run: |
           git --version
-          git config user.name 'github-actions[bot]'
-          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git config user.name 'daylin-bot'
+          git config user.email 'bot@dayl.in'
 
       - name: Check for Update
         run: python update.py
