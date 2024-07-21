@@ -35,6 +35,7 @@ jobs:
           if [[ -n "$(git status --porcelain)" ]]; then
             git add -A
             git commit -m "chore: bump version"
-            git tag $(grep version default.nix | sed -E 's/version = "(.*)";/\1/')
-            git push --follow-tags
+            git tag $(grep version default.nix | sed -E 's/[[:space:]]+version = "(.*)";/v\1/')
+            git push
+            git push --tags
           fi
