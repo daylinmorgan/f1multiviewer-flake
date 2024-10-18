@@ -1,10 +1,9 @@
 {
   stdenvNoCC,
   fetchzip,
-  lib,
   makeWrapper,
   makeDesktopItem,
-  xdg-utils,
+  # xdg-utils,
   ...
 }:
 stdenvNoCC.mkDerivation rec {
@@ -17,7 +16,7 @@ stdenvNoCC.mkDerivation rec {
   };
 
   nativeBuildInputs = [ makeWrapper ];
-  buildInputs = [ xdg-utils ];
+  # buildInputs = [ xdg-utils ];
   desktopItem = makeDesktopItem {
     name = "f1multiviewer";
     exec = "f1multiviewer %U";
@@ -33,8 +32,15 @@ stdenvNoCC.mkDerivation rec {
     ln -s $src/'MultiViewer for F1' $out/bin/f1multiviewer
   '';
 
+  # https://github.com/f1multiviewer/issue-tracker/issues/506
+  # add no-sandbox flag?
   postFixup = ''
+    runHook preInstall
+
     wrapProgram $out/bin/f1multiviewer \
-      --set PATH ${lib.makeBinPath [ xdg-utils ]}
+      --add-flags "--no-sandbox" \
+      --add-flags "\''${NIXOS_OZONE_WL:+\''${WAYLAND_DISPLAY:+--ozone-platform=wayland --enable-features=WaylandWindowDecorations}}" \
+
+    runHook postInstall
   '';
 }
